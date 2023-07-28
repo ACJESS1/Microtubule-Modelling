@@ -34,7 +34,7 @@ def render(snapshot):
     scene = fresnel.Scene(device)
     geometry = fresnel.geometry.Sphere(scene,
                                        N=len(snapshot.particles.position),
-                                       radius=0.2)
+                                       radius=0.5)
     geometry.material = fresnel.material.Material(color=fresnel.color.linear(
         [252 / 255, 209 / 255, 1 / 255]),
                                                   roughness=0.5)
