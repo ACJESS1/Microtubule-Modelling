@@ -55,12 +55,12 @@ sigma = 1.0  # hard core diameter
 q_angle = [math.cos(math.pi*(1/4)), 0, 0, math.sin(math.pi*(1/4))]
 
 #E_long site parameters
-a_long = 4.5
-b_long = 10
+a_long = 4500
+b_long = 1000
 r_long = 0.065
 
-a_lat = 6.3
-b_lat = 4.7
+a_lat = 6300
+b_lat = 4700
 r_lat = 0.04
 
 
@@ -139,7 +139,7 @@ patch_potential = hoomd.hpmc.pair.user.CPPPotential(r_cut=r_cut,
                                                     param_array=[initial_kT])
 
 mc.pair_potential = patch_potential
-sim.run(0000)
+sim.run(30000)
 
 with sim.state.cpu_local_snapshot as sn:
     #print(sn.particles.typeid)
