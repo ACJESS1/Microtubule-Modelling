@@ -20,7 +20,7 @@ FRESNEL_MIN_VERSION = packaging.version.parse("0.13.0")
 FRESNEL_MAX_VERSION = packaging.version.parse("0.14.0")
 
 
-def render(snapshot):
+def render(snapshot,hgt):
     if ('version' not in dir(fresnel) or packaging.version.parse(
             fresnel.version.version) < FRESNEL_MIN_VERSION
             or packaging.version.parse(
@@ -53,7 +53,7 @@ def render(snapshot):
     scene.camera = fresnel.camera.Orthographic(position=(L*2, L, L*2),
                                                look_at=(0, 0, 0),
                                                up=(0, 1, 0),
-                                               height=L * 1.4 + 1)
+                                               height=hgt)
     scene.background_alpha = 1
     scene.background_color = (1, 1, 1)
     return IPython.display.Image(tracer.sample(scene, samples=500)._repr_png_())
