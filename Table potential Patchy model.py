@@ -99,7 +99,7 @@ int z = round(r_ij.z/2+5);
 //int a=0,b=0,c=0;
 
 int a=round((-abs(angles.x)/M_PI)+1);
-int b=round((-(2*abs(angles.z))/M_PI)+1) ;
+int b=round((-(2*abs(angles.y))/M_PI)+1) ;
 int c=round((-abs(angles.z)/M_PI)+1);
 
 const float kT = param_array[sx*sy*sz*sa*sb*sc];
