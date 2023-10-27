@@ -50,18 +50,18 @@ sim.create_state_from_gsd(filename='initial.gsd')
 kf_delta_deg = 10  # half-opening angle of patches
 kf_epsilon = 1.0  # strength of patchy interaction in kT
 kf_lambda = 2.0  # range of patchy interaction
-sigma = 1.0  # hard core diameter
+sigma = 4.0  # hard core diameter
 
 q_angle = [math.cos(math.pi*(1/4)), 0, 0, math.sin(math.pi*(1/4))]
 
 #E_long site parameters
-a_long = 4500
-b_long = 1000
-r_long = 0.065
+a_long = 4.5
+b_long = 10
+r_long = 13
 
-a_lat = 6300
-b_lat = 4700
-r_lat = 0.04
+a_lat = 6.3
+b_lat = 8.0
+r_lat = 8
 
 
 mc = hoomd.hpmc.integrate.Sphere(default_d=0.05, default_a=0.1)
@@ -84,7 +84,6 @@ const float r_a = {r_lat};
 
 
 const float kT = param_array[0];
-const float beta_epsilon = epsilon/kT;
 
 const const vec3<float> temp(0, 0, sqrtf(2)/2);
 const quat<float> q_perp(sqrtf(2)/2,temp);
@@ -113,14 +112,14 @@ if ((patch_on_i_is_aligned_with_r_ij || patch_on_i_is_aligned_with_r_ji)
     && r_ij_length < lambda*sigma)
     {{
     return ((a_o* pow(r_ij_ls/r_o,2)*exp(-r_ij_ls/r_o))
-        -b_o*exp(-(pow(r_ij_ls/r_o,2))) );
+        -b_o*exp(-(pow(r_ij_ls/r_o,2))) ) / kT;
     }}
 else if (patch_on_i_is_perpendicular_r_ij
          && patch_on_j_is_perpendiculat_r_ij
          && r_ij_length < lambda*sigma)
     {{
     return ((a_a* pow(r_ij_ls/r_a,2)*exp(-r_ij_ls/r_a))
-    -b_a*exp(-(pow(r_ij_ls/r_a,2))) );      
+    -b_a*exp(-(pow(r_ij_ls/r_a,2))) ) / kT;      
     }}
 else
     {{

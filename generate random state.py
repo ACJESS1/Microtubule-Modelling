@@ -19,7 +19,7 @@ import sphere_fres as sf
 
 N_particles = 200
 
-spacing = 20
+spacing = 15
 K = math.ceil(N_particles**(1 / 3))
 L = K * spacing
 
