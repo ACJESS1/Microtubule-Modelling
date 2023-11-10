@@ -64,7 +64,7 @@ return (param_array[x*sy*sz*sa*sb*sc+y*sz*sa*sb*sc+z*sa*sb*sc+a*sb*sc+b*sc+c])/k
     return code
 
 def patch_code_map3(sx,sz,sy,sa,sb,sc):
-    
+
     code = f"""
 
 quat<float> q_rel = q_j*conj(q_i);
@@ -89,15 +89,15 @@ const int sx={sx},sy={sy},sz={sz},sa={sa},sb={sb},sc={sc};
 
 vec3<float> direction = rotate(conj(q_i),r_ij);
 
-int x = round((direction.x)/2+5);
-int y = round((direction.y)/2+5);
-int z = round((direction.z)/2+5);
+int x = round(direction.x+10);
+int y = round(direction.y+10);
+int z = round(direction.z+10);
 
 //int a=0,b=0,c=0;
 
 int a=round((2*angles.x)/M_PI+2);
-int b=round((4*angles.x)/M_PI+2);
-int c=round((2*angles.x)/M_PI+2);
+int b=round((4*angles.y)/M_PI+2);
+int c=round((2*angles.z)/M_PI+2);
 
 a=a%4,b=b%4,c=c%4;
 
@@ -110,6 +110,56 @@ return (param_array[x*sy*sz*sa*sb*sc+y*sz*sa*sb*sc+z*sa*sb*sc+a*sb*sc+b*sc+c])/k
 """
 
     return code
+
+    
+def patch_code_gen(sx,sz,sy,sa,sb,sc):    
+    
+    code = f"""
+    
+    quat<float> q_rel = q_j*conj(q_i);
+    vec3<float> angles(0,0,0);
+
+    // roll (x-axis rotation)
+    //    double sinr_cosp = 2 * (q_rel.s * q_rel.v.x + q_rel.v.y * q_rel.v.z);
+    //    double cosr_cosp = 1 - 2 * (q_rel.v.x * q_rel.v.x + q_rel.v.y * q_rel.v.y);
+    //    angles.x = std::atan2(sinr_cosp, cosr_cosp);
+
+        // pitch (y-axis rotation)
+    //    double sinp = std::sqrt(1 + 2 * (q_rel.s * q_rel.v.y - q_rel.v.x * q_rel.v.z));
+    //   double cosp = std::sqrt(1 - 2 * (q_rel.s * q_rel.v.y - q_rel.v.x * q_rel.v.z));
+    //    angles.y = 2 * std::atan2(sinp, cosp) - M_PI / 2;
+
+        // yaw (z-axis rotation)
+    //    double siny_cosp = 2 * (q_rel.s * q_rel.v.z + q_rel.v.x * q_rel.v.y);
+    //    double cosy_cosp = 1 - 2 * (q_rel.v.y * q_rel.v.y + q_rel.v.z * q_rel.v.z);
+    //    angles.z = std::atan2(siny_cosp, cosy_cosp);
+
+    const int sx={sx},sy={sy},sz={sz},sa={sa},sb={sb},sc={sc};
+
+    vec3<float> direction = rotate(conj(q_i),r_ij);
+
+    int x = round( ((sx-1)/20)*direction.x + (sx-1)/2 );
+    int y = round( ((sy-1)/20)*direction.y + (sy-1)/2 );
+    int z = round( ((sz-1)/20)*direction.z + (sz-1)/2 );
+
+    //int a=0,b=0,c=0;
+
+    int a=round( ((sa/2)*angles.x)/M_PI + (sa/2) );
+    int b=round( ((sa)*angles.y)/M_PI + (sa/2) );
+    int c=round( ((sa/2)*angles.z)/M_PI + (sa/2) );
+
+    a=a%sa,b=b%sb,c=c%sc;
+    
+    const float kT = param_array[sx*sy*sz*sa*sb*sc];
+    //+31661.46
+
+    return (param_array[x*sy*sz*sa*sb*sc+y*sz*sa*sb*sc+z*sa*sb*sc+a*sb*sc+b*sc+c]+31660)/kT;
+
+
+    """
+
+    return code
+
 
 def graphs(sim):
 
@@ -125,7 +175,8 @@ def graphs(sim):
 
     fig1 = plt.figure(1)
     ax= fig1.add_subplot()
-    ax.plot(step[potential_energy<0],potential_energy[potential_energy<0])
+    ax.plot(step,potential_energy)
+    ax.set_ylim(top = numpy.percentile(potential_energy[potential_energy<1e6], 95) ,bottom = numpy.min(potential_energy)-0.5)
     ax2 = ax.twinx()
     ax2.plot(step,kT,'r')
 
